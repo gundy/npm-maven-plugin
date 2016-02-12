@@ -22,6 +22,8 @@ import java.io.File;
  */
 public class NPMMojo extends AbstractJavascriptMojo {
 
+    private static final String NPM_REPO_URL_TAIL = "%s/%s";
+
     /**
      * Where the resulting files will be downloaded.
      *
@@ -46,10 +48,22 @@ public class NPMMojo extends AbstractJavascriptMojo {
      */
     private Settings settings;
 
+    /**
+     * Base URL for NPM repository - update this if you're using a cache/proxy in a corporate environment.
+     *
+     * @parameter expression="${recess.npmRepositoryBase}" default-value="http://registry.npmjs.org"
+     */
+    private String npmRepositoryBase;
+
+
     public void execute() throws MojoExecutionException {
         Log log = getLog();
 
         NPMModule.proxy = settings.getActiveProxy();
+
+        String base = npmRepositoryBase.endsWith("/") ? npmRepositoryBase : npmRepositoryBase + "/";
+        NPMModule.npmUrl = base + NPM_REPO_URL_TAIL;
+
         for (String aPackage : packages) {
             NPMModule.fromQueryString(log,aPackage).saveToFileWithDependencies(outputDirectory);
         }
