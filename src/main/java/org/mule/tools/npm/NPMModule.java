@@ -12,23 +12,20 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.github.zafarkhaja.semver.Version;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.settings.Proxy;
 import org.codehaus.plexus.archiver.tar.TarGZipUnArchiver;
-import org.mule.tools.npm.version.VersionResolver;
 
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class NPMModule {
 
@@ -185,17 +182,33 @@ public class NPMModule {
             Map.Entry dependency = (Map.Entry) dependencyAsObject;
             String dependencyName = (String) dependency.getKey();
 
-            String version = ((String) dependency.getValue());
+            String versionSpecification = ((String) dependency.getValue());
+            Version resolvedVersion = resolveVersion(dependencyName, versionSpecification);
 
             try {
-                version = new VersionResolver().getNextVersion(log, dependencyName, version);
-                dependencies.add(fromNameAndVersion(log, dependencyName, version));
+                dependencies.add(fromNameAndVersion(log, dependencyName, resolvedVersion.toString()));
             } catch (Exception e) {
                 throw new RuntimeException("Error resolving dependency: " +
-                        dependencyName + ":" + version + " not found.");
+                        dependencyName + ":" + versionSpecification + " not found.");
             }
-
         }
+    }
+
+    /*
+     * resolve the newest version that matches the search criteria
+     */
+    private Version resolveVersion(String dependencyName, String versionSpecification) throws IOException {
+        Set allPotentialVersions = downloadMetadataList(dependencyName);
+        ArrayList matchingVersions = new ArrayList();
+        for (Object o : allPotentialVersions) {
+			String potentialVersionString = o.toString();
+			Version potentialVersion = Version.valueOf(potentialVersionString);
+			if (potentialVersion.satisfies(versionSpecification)) {
+				matchingVersions.add(potentialVersion);
+			}
+		}
+        Collections.sort(matchingVersions);
+        return (Version)matchingVersions.get(matchingVersions.size()-1);
     }
 
     public static Set downloadMetadataList(String name) throws IOException, JsonParseException {
