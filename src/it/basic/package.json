@@ -1,0 +1,7 @@
+{
+  "author": "John Doe",
+  "dependencies": {
+    "baconjs": "~0.7"
+  },
+  "license": "license"
+}

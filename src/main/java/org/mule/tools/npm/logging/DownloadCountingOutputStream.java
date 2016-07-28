@@ -6,7 +6,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.npm;
+package org.mule.tools.npm.logging;
 
 import org.apache.commons.io.output.CountingOutputStream;
 

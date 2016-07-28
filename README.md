@@ -24,19 +24,22 @@ Add the following plugin inside build -> plugins:
                 <packages>
                     <package>colors:0.5.1</package>
                     <package>jshint:0.8.1</package>
+                    <package>@sindresorhus/df</package>
                 </packages>
+                <npmRepositoryBase>http://registry.npmjs.org</npmRepositoryBase>
+                <outputDirectory>${project.basedir}/src/main/resources/META-INF</outputDirectory>
             </configuration>
         </execution>
     </executions>
 </plugin>
 ```
 
-By default modules are downloaded recursively in `src/main/resources/META-INF` but other path can be specified with the 'outputDirectory' parameter. 
+By default modules are downloaded recursively in `src/main/resources/META-INF` but other path can be specified with the `outputDirectory` parameter. 
 
 # Authors / Contributors
-Alberto Pose (@thepose)
+Alberto Pose (`@thepose`)
 
-Robert Csakany (https://github.com/robertcsakany)
+Robert Csakany (`https://github.com/robertcsakany`)
 
 # License
 Copyright 2012 MuleSoft, Inc.

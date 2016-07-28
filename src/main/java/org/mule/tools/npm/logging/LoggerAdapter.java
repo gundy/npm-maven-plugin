@@ -6,7 +6,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.tools.npm;
+package org.mule.tools.npm.logging;
 
 import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.logging.Logger;
